@@ -1,0 +1,184 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: API-GATEWAY
+
+  cloud:
+    gateway:
+      routes:
+        - id: USER-SERVICE
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/users/**
+          filters:
+            - name: AuthFilter # Asegúrate de que el nombre del filtro sea correcto
+#              args:
+              # Puedes proporcionar argumentos adicionales si es necesario
+
+        - id: RESTAURANT-SERVICE
+          uri: lb://RESTAURANT-SERVICE
+          predicates:
+            - Path=/restaurants/**
+
+        - id: QUALIFICATION-SERVICE
+          uri: lb://QUALIFICATION-SERVICE
+          predicates:
+            - Path=/qualifications/**
+
+        - id: AUTH-SERVICE
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/auth/**
+
+
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+
+#server:
+#  port: 8084
+#
+#spring:
+#  application:
+#    name: API-GATEWAY
+#
+#  cloud:
+#    gateway:
+#      routes:
+#        - id: USER-SERVICE
+#          uri: lb://USER-SERVICE
+#          predicates:
+#            - Path=/users/**
+#          filters:
+#            - AuthFilter
+#
+#        - id: RESTAURANT-SERVICE
+#          uri: lb://RESTAURANT-SERVICE
+#          predicates:
+#            - Path=/restaurants/**
+#
+#        - id: QUALIFICATION-SERVICE
+#          uri: lb://QUALIFICATION-SERVICE
+#          predicates:
+#            - Path=/qualifications/**
+#
+#        - id: AUTH-SERVICE
+#          uri: lb://AUTH-SERVICE
+#          predicates:
+#            - Path=/auth/**
+#
+#eureka:
+#  instance:
+#    prefer-ip-address: true
+#  client:
+#    fetch-registry: true
+#    register-with-eureka: true
+#    service-url:
+#      defaultZone: http://localhost:8761/eureka
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#
+#eureka:
+#  instance:
+#    prefer-ip-address: true
+#  client:
+#    fetch-registry: true
+#    register-with-eureka: true
+#    service-url:
+#      defaultZone: http://localhost:8761/eureka
+
+#server:
+#  port: 8084
+#
+#spring:
+#  application:
+#    name: API-GATEWAY
+#
+#  cloud:
+#    gateway:
+#      routes:
+#        - id: USER-SERVICE
+#          uri: lb://USER-SERVICE
+#          predicates:
+#            - Path=/users/**
+#          filters:
+#            - AuthFilter
+#
+#        - id: RESTAURANT-SERVICE
+#          uri: lb://RESTAURANT-SERVICE
+#          predicates:
+#            - Path=/restaurants/**,/staffs/**
+#
+#        - id: QUALIFICATION-SERVICE
+#          uri: lb://QUALIFICATION-SERVICE
+#          predicates:
+#            - Path=/qualifications/**
+#
+#        - id: AUTH-SERVICE
+#          uri: lb://AUTH-SERVICE
+#          predicates:
+#            - Path=/auth/**
+#
+#eureka:
+#  instance:
+#    prefer-ip-address: true
+#  client:
+#    fetch-registry: true
+#    register-with-eureka: true
+#    service-url:
+#      defaultZone: http://localhost:8761/eureka

@@ -1,0 +1,249 @@
+/*
+package com.microservice.qualification.service;
+
+import com.microservice.qualification.entity.Qualification;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.NoSuchElementException;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class QualificationServiceTest {
+
+    @InjectMocks
+    private QualificationServiceImpl qualificationService;
+
+    @Mock
+    private MongoTemplate mongoTemplate;
+
+    @Test
+    void createQualificationTest() {
+        // Arrange
+        Qualification qualificationToSave = new Qualification();
+        when(mongoTemplate.save(any(Qualification.class))).thenReturn(qualificationToSave);
+
+        // Act
+        Qualification createdQualification = qualificationService.createQualification(new Qualification());
+
+        // Assert
+        assertNotNull(createdQualification);
+        assertEquals(qualificationToSave, createdQualification);
+        verify(mongoTemplate, times(1)).save(any(Qualification.class));
+    }
+
+    @Test
+    void getQualificationsTest() {
+        // Arrange
+        List<Qualification> qualificationList = Arrays.asList(new Qualification(), new Qualification());
+        when(mongoTemplate.findAll(Qualification.class)).thenReturn(qualificationList);
+
+        // Act
+        List<Qualification> result = qualificationService.getQualifications();
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(qualificationList.size(), result.size());
+        verify(mongoTemplate, times(1)).findAll(Qualification.class);
+    }
+
+    @Test
+    void getQualificationsByUserIdTest() {
+        // Arrange
+        String userId = "someUserId";
+        Query query = new Query(Criteria.where("userId").is(userId));
+        List<Qualification> qualificationList = Arrays.asList(new Qualification(), new Qualification());
+        when(mongoTemplate.find(query, Qualification.class)).thenReturn(qualificationList);
+
+        // Act
+        List<Qualification> result = qualificationService.getQualificationsByUserId(userId);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(qualificationList.size(), result.size());
+        verify(mongoTemplate, times(1)).find(query, Qualification.class);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+//    @Test
+//    void createQualificationTest() {
+//        // Arrange
+//        Qualification qualificationToCreate = new Qualification();
+//
+//        // Act
+//        when(mongoTemplate.save(eq(qualificationToCreate))).thenReturn(qualificationToCreate);
+//        Qualification createdQualification = qualificationService.createQualification(qualificationToCreate);
+//
+//        // Assert
+//        assertNotNull(createdQualification);
+//        verify(mongoTemplate, times(1)).save(eq(qualificationToCreate));
+//    }
+
+//    @Test
+//    void getQualificationsTest() {
+//        // Arrange
+//        List<Qualification> qualificationList = Arrays.asList(new Qualification(), new Qualification());
+//
+//        // Act
+//        when(mongoTemplate.findAll(Qualification.class)).thenReturn(qualificationList);
+//        List<Qualification> result = qualificationService.getQualifications();
+//
+//        // Assert
+//        assertNotNull(result);
+//        assertEquals(qualificationList.size(), result.size());
+//        verify(mongoTemplate, times(1)).findAll(Qualification.class);
+    }
+
+//    @Test
+//    void getQualificationsByUserIdTest() {
+//        // Arrange
+//        String userId = "someUserId";
+//        List<Qualification> qualificationList = Arrays.asList(new Qualification(), new Qualification());
+//
+//        // Act
+//        Query query = new Query(Criteria.where("userId").is(userId));
+//        when(mongoTemplate.find(eq(query), eq(Qualification.class))).thenReturn(qualificationList);
+//        List<Qualification> result = qualificationService.getQualificationsByUserId(userId);
+//
+//        // Assert
+//        assertNotNull(result);
+//        assertEquals(qualificationList.size(), result.size());
+//        verify(mongoTemplate, times(1)).find(eq(query), eq(Qualification.class));
+//    }
+
+    @Test
+    void updateQualificationTest() {
+        // Arrange
+        String qualificationId = "someQualificationId";
+        Qualification existingQualification = new Qualification();
+        existingQualification.setQualificationId(qualificationId);
+
+        when(mongoTemplate.findById(eq(qualificationId), eq(Qualification.class)))
+                .thenReturn(Optional.of(existingQualification));
+
+        Qualification updatedQualification = new Qualification();
+        updatedQualification.setQualification(8);
+
+        // Act
+        Qualification result = qualificationService.updateQualification(qualificationId, updatedQualification);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(updatedQualification.getQualification(), result.getQualification());
+        verify(mongoTemplate, times(1)).findById(eq(qualificationId), eq(Qualification.class));
+        verify(mongoTemplate, times(1)).save(eq(updatedQualification));
+    }
+
+    @Test
+    void updateNonExistentQualificationTest() {
+        // Arrange
+        String nonExistentQualificationId = "nonExistentId";
+
+        when(mongoTemplate.findById(eq(nonExistentQualificationId), eq(Qualification.class)))
+                .thenReturn(Optional.empty());
+
+        Qualification updatedQualification = new Qualification();
+        updatedQualification.setQualification(8);
+
+        // Act & Assert
+        assertThrows(NoSuchElementException.class,
+                     () -> qualificationService.updateQualification(nonExistentQualificationId, updatedQualification));
+
+        verify(mongoTemplate, times(1)).findById(eq(nonExistentQualificationId), eq(Qualification.class));
+        verify(mongoTemplate, never()).save(any(Qualification.class));
+    }
+
+    @Test
+    void deleteQualificationTest() {
+        // Arrange
+        String qualificationId = "someQualificationId";
+        Qualification existingQualification = new Qualification();
+        existingQualification.setQualificationId(qualificationId);
+
+        when(mongoTemplate.findById(eq(qualificationId), eq(Qualification.class)))
+                .thenReturn(Optional.of(existingQualification));
+
+        // Act
+        qualificationService.deleteQualification(qualificationId);
+
+        // Assert
+        verify(mongoTemplate, times(1)).findById(eq(qualificationId), eq(Qualification.class));
+        verify(mongoTemplate, times(1)).delete(eq(existingQualification));
+    }
+
+    @Test
+    void deleteNonExistentQualificationTest() {
+        // Arrange
+        String nonExistentQualificationId = "nonExistentId";
+
+        when(mongoTemplate.findById(eq(nonExistentQualificationId), eq(Qualification.class)))
+                .thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(NoSuchElementException.class,
+                     () -> qualificationService.deleteQualification(nonExistentQualificationId));
+
+        verify(mongoTemplate, times(1)).findById(eq(nonExistentQualificationId), eq(Qualification.class));
+        verify(mongoTemplate, never()).delete(any(Qualification.class));
+    }
+}
+
+
+
+
+
+*/
+/*
+
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class QualificationServiceImplTest {
+
+    @Test
+    void createQualification() {
+    }
+
+    @Test
+    void getQualifications() {
+    }
+
+    @Test
+    void getQualificationsByUserId() {
+    }
+
+    @Test
+    void getQualificationsByRestaurantId() {
+    }
+
+    @Test
+    void updateQualification() {
+    }
+
+    @Test
+    void deleteQualification() {
+    }
+}*//*
+
